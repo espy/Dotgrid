@@ -9,9 +9,9 @@ function Renderer()
   this.svg_el.setAttribute("version","1.1");
   this.svg_el.style.fill = "none";
 
-  this.layer_1 = document.createElementNS("http://www.w3.org/2000/svg", "path"); 
-  this.layer_2 = document.createElementNS("http://www.w3.org/2000/svg", "path"); 
-  this.layer_3 = document.createElementNS("http://www.w3.org/2000/svg", "path"); 
+  this.layer_1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  this.layer_2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  this.layer_3 = document.createElementNS("http://www.w3.org/2000/svg", "path");
 
   this.svg_el.appendChild(this.layer_3);
   this.svg_el.appendChild(this.layer_2);
@@ -19,10 +19,11 @@ function Renderer()
 
   this.update = function()
   {
-    this.svg_el.setAttribute("width",(dotgrid.tool.settings.size.width-(5))+"px");
-    this.svg_el.setAttribute("height",(dotgrid.tool.settings.size.height+(10))+"px");
-    this.svg_el.style.width = (dotgrid.tool.settings.size.width-(5));
-    this.svg_el.style.height = dotgrid.tool.settings.size.height+(10);
+    const canvasWidth = dotgrid.tool.settings.size.width-(5)
+    const canvasHeight = dotgrid.tool.settings.size.height+(10)
+    this.svg_el.setAttribute("viewBox", `0 0 ${canvasWidth} ${canvasHeight}`)
+    this.svg_el.setAttribute("width", "100%");
+    this.svg_el.setAttribute("height", "100%");
     this.svg_el.style.strokeWidth = dotgrid.tool.style().thickness;
 
     let styles = dotgrid.tool.styles
@@ -34,20 +35,20 @@ function Renderer()
     this.layer_1.style.stroke = styles[0].color;
     this.layer_1.style.fill = styles[0].fill;
     this.layer_1.setAttribute("d",paths[0])
-  
+
     this.layer_2.style.strokeWidth = styles[1].thickness;
     this.layer_2.style.strokeLinecap = styles[1].strokeLinecap;
     this.layer_2.style.strokeLinejoin = styles[1].strokeLinejoin;
     this.layer_2.style.stroke = styles[1].color;
     this.layer_2.style.fill = styles[1].fill;
     this.layer_2.setAttribute("d",paths[1])
-    
+
     this.layer_3.style.strokeWidth = styles[2].thickness;
     this.layer_3.style.strokeLinecap = styles[2].strokeLinecap;
     this.layer_3.style.strokeLinejoin = styles[2].strokeLinejoin;
     this.layer_3.style.stroke = styles[2].color;
-    this.layer_3.style.fill = styles[2].fill; 
-    this.layer_3.setAttribute("d",paths[2])   
+    this.layer_3.style.fill = styles[2].fill;
+    this.layer_3.setAttribute("d",paths[2])
   }
 
   this.to_png = function(size = dotgrid.tool.settings.size,callback = dotgrid.render)
@@ -64,7 +65,7 @@ function Renderer()
 
     let canvas = document.createElement("canvas");
 
-    canvas.width = (size.width)*2; 
+    canvas.width = (size.width)*2;
     canvas.height = (size.height+30)*2;
 
     let ctx = canvas.getContext('2d');
@@ -94,11 +95,11 @@ function Renderer()
 
     let canvas = document.createElement("canvas");
     let ctx = canvas.getContext('2d');
-    
+
     let win = window.open('about:blank','image from canvas');
     let img = new Image;
 
-    canvas.width = size.width*2; 
+    canvas.width = size.width*2;
     canvas.height = size.height*2;
 
     img.onload = function(){
