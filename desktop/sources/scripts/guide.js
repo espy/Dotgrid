@@ -238,8 +238,10 @@ function Guide()
 
   this.draw_cropping_frame = function() {
     let ctx = this.el.getContext('2d');
-    ctx.strokeStyle = dotgrid.theme.active.f_low;
-    ctx.lineWidth = 3
+    ctx.setLineDash([5, 10])
+    ctx.strokeStyle = dotgrid.theme.active.b_low;
+    ctx.lineCap="round";
+    ctx.lineWidth = 5;
     const vb = dotgrid.tool.viewBox
     // Calculate the frame’s canvas coordinates
     // the canvas is offset by 15px (the grid’s 0:0 is at 15:15) and scaled
@@ -258,6 +260,7 @@ function Guide()
     ]
     // Draw the cropping frame
     ctx.strokeRect(vbCanvasCoords[0],vbCanvasCoords[1],vbCanvasCoords[2],vbCanvasCoords[3])
+    ctx.setLineDash([0])
     // Draw the frame’s handles
     this.draw_handle({x:vbGuideCoords[0],y:vbGuideCoords[1]}) // top left
     this.draw_handle({x:vbGuideCoords[2] + vbGuideCoords[0],y:vbGuideCoords[1]}) // top right
