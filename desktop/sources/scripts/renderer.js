@@ -19,11 +19,9 @@ function Renderer()
 
   this.update = function()
   {
-    const canvasWidth = dotgrid.tool.settings.size.width-(5)
-    const canvasHeight = dotgrid.tool.settings.size.height+(10)
-    this.svg_el.setAttribute("viewBox", `0 0 ${canvasWidth} ${canvasHeight}`)
-    this.svg_el.setAttribute("width", "100%");
-    this.svg_el.setAttribute("height", "100%");
+    const vb = dotgrid.tool.viewBox
+    this.svg_el.setAttribute("viewBox", `${vb[0]+5}, ${vb[1]+5}, ${vb[2]}, ${vb[3]}`)
+
     this.svg_el.style.strokeWidth = dotgrid.tool.style().thickness;
 
     let styles = dotgrid.tool.styles

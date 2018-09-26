@@ -12,6 +12,7 @@ function Tool()
   ];
   this.vertices = [];
   this.reqs = { line:2,arc_c:2,arc_r:2,bezier:3,close:0 };
+  this.viewBox = [0,0,300,300] // in guide coord format
 
   this.start = function()
   {
@@ -44,7 +45,7 @@ function Tool()
   this.redo = function()
   {
     this.layers = dotgrid.history.next();
-    dotgrid.guide.update();    
+    dotgrid.guide.update();
     dotgrid.interface.update(true);
   }
 
@@ -68,7 +69,7 @@ function Tool()
     dotgrid.guide.update();
     dotgrid.interface.update(true);
   }
-  
+
   this.replace = function(dot)
   {
     if(!dot.layers || dot.layers.length != 3){ console.warn("Incompatible version"); return; }
@@ -91,11 +92,11 @@ function Tool()
   }
 
   // EDIT
-  
+
   this.remove_segment = function()
   {
     if(this.vertices.length > 0){ this.clear(); return; }
-    
+
     this.layer().pop();
     this.clear();
     dotgrid.guide.update();
@@ -153,7 +154,7 @@ function Tool()
       this.layers[this.index][append_target].vertices = this.layers[this.index][append_target].vertices.concat(this.vertices.slice())
     }
     else{
-      this.layer().push({type:type,vertices:this.vertices.slice()})  
+      this.layer().push({type:type,vertices:this.vertices.slice()})
     }
 
     dotgrid.history.push(this.layers);
@@ -296,7 +297,7 @@ function Tool()
     if(!this.styles[this.index]){
       this.styles[this.index] = [];
     }
-    return this.styles[this.index];    
+    return this.styles[this.index];
   }
 
   // Layers

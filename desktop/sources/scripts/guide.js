@@ -21,7 +21,7 @@ function Guide()
   this.update = function(force = false)
   {
     this.clear();
-    
+
     this.el.getContext('2d').restore();
 
     if(dotgrid.tool.index == 2){ this.draw_markers() ; this.draw_vertices() }
@@ -33,8 +33,9 @@ function Guide()
 
     this.draw_handles()
     this.draw_translation();
-    this.draw_cursor();  
+    this.draw_cursor();
     this.draw_preview();
+    this.draw_cropping_frame();
   }
 
   this.clear = function()
@@ -135,8 +136,8 @@ function Guide()
     ctx.fillStyle = dotgrid.theme.active.f_high;
     ctx.fill();
     ctx.strokeStyle = dotgrid.theme.active.f_high;
-    ctx.stroke(); 
-    ctx.closePath(); 
+    ctx.stroke();
+    ctx.closePath();
 
     ctx.beginPath();
     ctx.arc((pos.x * this.scale), (pos.y * this.scale), radius, 0, 2 * Math.PI, false);
@@ -173,22 +174,22 @@ function Guide()
   }
 
   this.draw_translation = function()
-  {   
+  {
     if(!dotgrid.cursor.translation){ return; }
 
     let ctx = this.el.getContext('2d');
-    
+
     ctx.beginPath();
     ctx.moveTo((dotgrid.cursor.translation.from.x * this.scale),(dotgrid.cursor.translation.from.y * this.scale));
     ctx.lineTo((dotgrid.cursor.translation.to.x * this.scale),(dotgrid.cursor.translation.to.y * this.scale));
     ctx.lineCap="round";
     ctx.lineWidth = 5;
     ctx.strokeStyle = dotgrid.theme.active.f_low;
-    ctx.setLineDash([5,10]); 
+    ctx.setLineDash([5,10]);
     ctx.stroke();
     ctx.closePath();
 
-    ctx.setLineDash([]); 
+    ctx.setLineDash([]);
     ctx.restore();
   }
 
@@ -201,16 +202,16 @@ function Guide()
     ctx.lineCap = "round";
     ctx.arc(Math.abs(pos.x * -this.scale), Math.abs(pos.y * this.scale), 5, 0, 2 * Math.PI, false);
     ctx.strokeStyle = dotgrid.theme.active.background;
-    ctx.stroke(); 
-    ctx.closePath(); 
+    ctx.stroke();
+    ctx.closePath();
 
     ctx.beginPath();
     ctx.lineWidth = 3;
     ctx.lineCap = "round";
     ctx.arc(Math.abs(pos.x * -this.scale), Math.abs(pos.y * this.scale), clamp(radius,5,100), 0, 2 * Math.PI, false);
     ctx.strokeStyle = dotgrid.theme.active.f_med;
-    ctx.stroke(); 
-    ctx.closePath(); 
+    ctx.stroke();
+    ctx.closePath();
   }
 
   this.draw_preview = function()
@@ -231,10 +232,38 @@ function Guide()
     }
     this.draw_path(path,style)
 
-    ctx.setLineDash([]); 
+    ctx.setLineDash([]);
     ctx.restore();
   }
 
+  this.draw_cropping_frame = function() {
+    let ctx = this.el.getContext('2d');
+    ctx.strokeStyle = dotgrid.theme.active.f_low;
+    ctx.lineWidth = 3
+    const vb = dotgrid.tool.viewBox
+    // Calculate the frame’s canvas coordinates
+    // the canvas is offset by 15px (the grid’s 0:0 is at 15:15) and scaled
+    const vbCanvasCoords = [
+      (vb[0] + 15) * this.scale, // x
+      (vb[1] + 15) * this.scale, // y
+      vb[2] * this.scale,        // width
+      vb[3] * this.scale         // height
+    ]
+    // Calculate the handles’ guide coordinates (`draw_handle()` expects coords in that format)
+    const vbGuideCoords = [
+      vbCanvasCoords[0] / this.scale, // x
+      vbCanvasCoords[1] / this.scale, // y
+      vbCanvasCoords[2] / this.scale, // width
+      vbCanvasCoords[3] / this.scale  // height
+    ]
+    // Draw the cropping frame
+    ctx.strokeRect(vbCanvasCoords[0],vbCanvasCoords[1],vbCanvasCoords[2],vbCanvasCoords[3])
+    // Draw the frame’s handles
+    this.draw_handle({x:vbGuideCoords[0],y:vbGuideCoords[1]}) // top left
+    this.draw_handle({x:vbGuideCoords[2] + vbGuideCoords[0],y:vbGuideCoords[1]}) // top right
+    this.draw_handle({x:vbGuideCoords[2] + vbGuideCoords[0],y:vbGuideCoords[1] + vbGuideCoords[3]}) // bottom right
+    this.draw_handle({x:vbGuideCoords[0],y:vbGuideCoords[1] + vbGuideCoords[3]}) // bottom left
+  }
   function pos_is_equal(a,b){ return a && b && Math.abs(a.x) == Math.abs(b.x) && Math.abs(a.y) == Math.abs(b.y) }
   function clamp(v, min, max) { return v < min ? min : v > max ? max : v; }
 }
