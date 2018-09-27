@@ -52,11 +52,19 @@ function Guide()
   this.resize = function(size)
   {
     let offset = 15
+    const oldSize = {
+      width: this.el.width / this.scale - 30,
+      height: this.el.height / this.scale - 30
+    }
     this.el.width = (size.width+offset)*this.scale;
     this.el.height = (size.height+(offset*2))*this.scale;
     this.el.style.width = (size.width+offset)+"px";
     this.el.style.height = (size.height+(offset*2))+"px";
-
+    const newSize = {
+      width: size.width - offset,
+      height: size.height
+    }
+    this.fitCroppingFrameToEdges(oldSize, size);
     this.update();
   }
 
@@ -267,6 +275,25 @@ function Guide()
     this.draw_handle({x:vbGuideCoords[2] + vbGuideCoords[0],y:vbGuideCoords[1] + vbGuideCoords[3]}) // bottom right
     this.draw_handle({x:vbGuideCoords[0],y:vbGuideCoords[1] + vbGuideCoords[3]}) // bottom left
   }
+
+  this.fitCroppingFrameToEdges = function (oldSize, newSize) {
+    const vb = dotgrid.tool.viewBox
+    // if the viewBox was the same size as the canvas before, make it so again
+    if (vb[0] === 0 && vb[1] === 0 && vb[2] === oldSize.width && vb[3] === oldSize.height){
+      dotgrid.tool.viewBox = [0,0,newSize.width - 15,newSize.height]
+      this.update()
+      return
+    }
+    // shrink the cropping frame to never be larger than the guide
+    if (vb[0] + vb[2] > newSize.width - 15){
+      dotgrid.tool.viewBox[2] = newSize.width - vb[0] - 15
+    }
+    if (vb[1] + vb[3] > newSize.height){
+      dotgrid.tool.viewBox[3] = newSize.height - vb[1]
+    }
+    this.update()
+  }
+
   function pos_is_equal(a,b){ return a && b && Math.abs(a.x) == Math.abs(b.x) && Math.abs(a.y) == Math.abs(b.y) }
   function clamp(v, min, max) { return v < min ? min : v > max ? max : v; }
 }
